@@ -46,6 +46,7 @@ def main(request):
             Axie.objects.filter(ronin=ronin).delete()
             Axie.objects.bulk_create(axies_create)
 
+            return redirect('main')
     else:
         form = RoninForm()
 

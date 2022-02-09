@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+    .text {
+      display: inline-block;
+      margin: 0 20px 0 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="row pt-4">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success btn-sm">Submit</button>
+    </form>
+</div>
+<hr/>
+<div class="row">
+    <div class="d-flex">
+        <a href="{% url 'main' %}" class="btn btn-primary btn-sm">All</a>
+        <a href="{% url 'main' %}?hidden=False" class="btn btn-primary btn-sm">Unhidden</a>
+        <a href="{% url 'main' %}?hidden=True" class="btn btn-primary btn-sm">Hidden</a>
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <h6>Target class:</h6>
+    <form>
+        {% for key, val in axie_group.items %}
+        <div class="form-check form-check-inline">
+            <input class="form-check-input"
+                   type="radio"
+                   name="target-class"
+                   id="target-class-{{ forloop.counter }}"
+                   value="{{ key }}"
+                   {% if forloop.counter == 1 %}
+                    checked
+                   {% endif %}>
+            <label class="form-check-label" for="target-class-{{ forloop.counter }}">{{ val }}</label>
+        </div>
+        {% endfor %}
+    </form>
+</div>
+<hr/>
+<div class="row">
+    {% for axie in axies %}
+    <div class="col-lg-3 col-md-3 col-sm-4 pt-sm-2">
+        {% include 'core/snippets/axie.html' %}
+    </div>
+    {% endfor %}
+</div>
+<hr/>
+<div class="row">
+    <div class="col-6">
+        <h6>Cards selected:</h6>
+        <div id="cards-selected"></div>
+    </div>
+
+    <div class="col-6">
+        <h6>Damage output: <span id="damage-output" class="font-weight-bold text-success" style="font-size:30px;">0</span></h6>
+        <button id="reset-btn" class="btn btn-danger btn-sm">Remove all</button>
+    </div>
+</div>
+<hr/>
+
+<!--<div class="row pt-4">-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--            <tr>-->
+<!--                <th>ID</th>-->
+<!--                <td>STATS</td>-->
+<!--                <th>NAME</th>-->
+<!--                <th>CLASS</th>-->
+<!--                <th>ABILITIES</th>-->
+<!--                <th>IMAGE</th>-->
+<!--            </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--            {% for axie in axies %}-->
+<!--            <tr>-->
+<!--                <td>{{ axie.id }}</td>-->
+<!--                <td>{{ axie.stats }}</td>-->
+<!--                <td>{{ axie.name }}</td>-->
+<!--                <td>{{ axie.class_ }}</td>-->
+<!--                <td>-->
+<!--                    <ul>-->
+<!--                    {% for part in axie.parts %}-->
+<!--                        <li>{{ part }}</li>-->
+<!--                    {% endfor %}-->
+<!--                    </ul>-->
+<!--                </td>-->
+<!--                <td><img src="{{ axie.image }}" alt="axie-img" height="250"></td>-->
+<!--            </tr>-->
+<!--            {% endfor %}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+{% endblock %}
+
+{% block js %}
+    <script>
+        updateDamageUrl = '{% url "core:update_damage" %}';
+        csrfToken = '{{ csrf_token }}';
+    </script>
+    <script src="{% static 'core/axie_calc.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,23 @@
+<div class="card border border-dark">
+    <img src="{{ axie.image }}" class="card-img-top" alt="axie-img">
+    <div class="card-body">
+        <h5 class="card-title">
+            {{ axie.axie_id }}
+            {% if axie.hidden %}
+                <a href="{% url 'core:toggle_hidden_axie' axie.axie_id %}" class="btn btn-danger btn-sm">Unhidden</a>
+            {% else %}
+                <a href="{% url 'core:toggle_hidden_axie' axie.axie_id %}" class="btn btn-danger btn-sm">Hide</a>
+            {% endif %}
+        </h5>
+        <p class="card-text"></p>
+        <div class="row g-1">
+            {% for part in axie.parts %}
+                {% with ab=part.abilities.0 %}
+                    <div class="col-lg-3 col-md-6 col-sm-6 pt-lg-0 pt-md-0 pt-sm-3">
+                        {% include 'core/snippets/axie_card.html' %}
+                    </div>
+                {% endwith%}
+            {% endfor %}
+        </div>
+    </div>
+</div>

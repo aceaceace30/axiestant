@@ -1,0 +1,12 @@
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="row g-3">
+            {% for item in selected_cards %}
+                <div class="col-lg-2 col-md-2 col-sm-3 pt-1">
+                    {% include 'core/snippets/axie_card.html' %}
+                    <small class="text-danger">-{{ item.calculated_damage }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

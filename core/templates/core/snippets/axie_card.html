@@ -1,0 +1,13 @@
+{% if ab %}
+<img class="axie-card img-fluid"
+     src="{{ ab.backgroundUrl }}"
+     alt="ability-img"
+     data-axie-id="{{ axie.axie_id }}"
+     data-part-name="{{ part.name }}">
+{% else %}
+<img class="axie-card-selected img-fluid"
+     src="{{ item.img_src }}"
+     alt="ability-img"
+     data-axie-id="{{ item.axie_id }}"
+     data-part-name="{{ item.part_name }}">
+{% endif %}

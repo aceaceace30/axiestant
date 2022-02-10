@@ -9,7 +9,7 @@ class User(AbstractUser):
 
 class Ronin(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='ronins')
-    address = models.CharField(verbose_name='ronin_address', max_length=255)
+    address = models.CharField(verbose_name='Ronin address', max_length=255)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

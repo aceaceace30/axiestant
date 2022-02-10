@@ -74,6 +74,8 @@ def main(request):
 
 @require_POST
 def update_damage(request):
+    ronin_obj = Ronin.objects.get(session_id=request.session.session_key)
+
     selected_cards = json.loads(request.POST['selected_cards'])
     target_class = int(request.POST['target_class'])
     context = {'selected_cards': selected_cards}
@@ -87,7 +89,7 @@ def update_damage(request):
 
     damage_output,attack_up_current_multiplier = (0, 0)
     for item in selected_cards:
-        axie = Axie.objects.get(axie_id=item['axie_id'])
+        axie = ronin_obj.axies.get(axie_id=item['axie_id'])
         card_count = card_count_per_axie[item['axie_id']]
         calculated_damage, attack_up_current_multiplier = calculate_damage(axie=axie,
                                                                            target_class=target_class,

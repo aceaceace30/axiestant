@@ -4,12 +4,12 @@ from django.db import models
 
 
 class User(AbstractUser):
-    ronin_address = models.ForeignKey('Ronin', on_delete=models.CASCADE)
+    ronin = models.ForeignKey('Ronin', on_delete=models.CASCADE)
 
 
 class Ronin(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='ronins')
-    address = models.CharField(max_length=255)
+    address = models.CharField(verbose_name='ronin_address', max_length=255)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

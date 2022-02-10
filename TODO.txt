@@ -1,3 +1,4 @@
-- Add way to store in session per user
-- Check TODO notes
-- Complete attack up bonus
+- Add way to store in session per user: X
+- Complete attack up bonus: X
+- Remove single placed card:
+- Way to add attack up on 1st card:

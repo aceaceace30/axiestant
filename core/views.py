@@ -87,7 +87,7 @@ def update_damage(request):
         else:
             card_count_per_axie[item['axie_id']] += 1
 
-    damage_output,attack_up_current_multiplier = (0, 0)
+    damage_output, attack_up_current_multiplier = 0, 1
     for item in selected_cards:
         axie = ronin_obj.axies.get(axie_id=item['axie_id'])
         card_count = card_count_per_axie[item['axie_id']]

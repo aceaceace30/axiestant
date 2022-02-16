@@ -1,10 +1,10 @@
 import math
 
-CLASS_ADVANTAGE_BONUS = 0.15
-CLASS_DISADVANTAGE_LESS = 0.15 * -1
-SAME_CLASS_BONUS = 0.10
-SPECIAL_CLASS_BONUS = 0.075
-ATTACK_UP_BONUS = 0.20
+CLASS_ADVANTAGE_MULTIPLIER = 1.15
+CLASS_DISADVANTAGE_MULTIPLIER = 0.85
+SAME_CLASS_MULTIPLIER = 1.1
+SPECIAL_CLASS_MULTIPLIER = 1.075
+ATTACK_UP_MULTIPLIER = 1.2
 
 
 AXIE_GROUP = {
@@ -35,26 +35,28 @@ for group in AXIE_GROUP.values():
 
 def get_attack_up_bonus_multiplier(card_name, target_class, attack_up_multiplier):
     if (card_name == 'Fish Hook' and target_class == 2):
-        attack_up_multiplier += ATTACK_UP_BONUS
+        attack_up_multiplier = ATTACK_UP_MULTIPLIER
     elif (card_name == 'Clam Slash' and target_class == 1):
-        attack_up_multiplier += ATTACK_UP_BONUS
+        attack_up_multiplier = ATTACK_UP_MULTIPLIER
     elif (card_name == 'Cuckoo'):
-        attack_up_multiplier += ATTACK_UP_BONUS
+        attack_up_multiplier += .2
+    else:
+        attack_up_multiplier = 1
     return attack_up_multiplier
 
-def get_class_bonus(attacker_class, card_class, card_attack):
-    class_bonus = 0
+def get_class_bonus(attacker_class, card_class):
+    multiplier = 1
     if (attacker_class == 'Dusk' and card_class in ['Plant', 'Reptile']) or \
             (attacker_class == 'Mech' and card_class in ['Beast', 'Bug']) or \
             (attacker_class == 'Dawn' and card_class in ['Bird', 'Aquatic']):
-        class_bonus = SPECIAL_CLASS_BONUS
+        multiplier = SPECIAL_CLASS_MULTIPLIER
 
     elif attacker_class == card_class:
-        class_bonus = SAME_CLASS_BONUS
+        multiplier = SAME_CLASS_MULTIPLIER
 
-    return card_attack * class_bonus
+    return multiplier
 
-def get_class_advantage_disadvantage_bonus(card_class, target_class, card_attack, same_class_bonus):
+def get_class_advantage_disadvantage_bonus(card_class, target_class):
     group_number = 0
     for group_num, axie_list in AXIE_GROUP.items():
         if card_class in axie_list:
@@ -68,20 +70,27 @@ def get_class_advantage_disadvantage_bonus(card_class, target_class, card_attack
             operator = opr
 
     if operator == '+':
-        multiplier = CLASS_ADVANTAGE_BONUS
+        multiplier = CLASS_ADVANTAGE_MULTIPLIER
     elif operator == '-':
-        multiplier = CLASS_DISADVANTAGE_LESS
+        multiplier = CLASS_DISADVANTAGE_MULTIPLIER
     else:
-        multiplier = 0
-    return (card_attack + same_class_bonus) * multiplier
+        multiplier = 1
+    return multiplier
 
-def get_card_combo_bonus(card_count, attacker_skill, card_attack,
-                         same_class_bonus, class_adv_dis_bonus):
+def get_card_combo_bonus(card_count, attacker_skill, card_attack):
     combo_card_bonus = 0
     if card_count > 1:
-        combo_card_bonus = (card_attack + same_class_bonus + class_adv_dis_bonus) * (attacker_skill * 0.55 - 12.25) / 100 * 0.985
+        combo_card_bonus = card_attack * (attacker_skill * 0.55 - 12.25) / 100 * 0.985
 
     return combo_card_bonus
+
+
+def get_crit_multiplier(card_name, card_count):
+    multiplier = 1
+    if card_name == 'Single Combat' and card_count > 2:
+        multiplier = 2
+    return multiplier
+
 
 def calculate_damage(axie, target_class, part_name, card_count, attack_up_current_multiplier):
 
@@ -93,29 +102,24 @@ def calculate_damage(axie, target_class, part_name, card_count, attack_up_curren
     card_class = ability_details['class']
     card_attack = ability_details['attack']
 
-    same_class_bonus = get_class_bonus(attacker_class, card_class, card_attack)
-    class_adv_dis_bonus = get_class_advantage_disadvantage_bonus(card_class, target_class,
-                                                                 card_attack, same_class_bonus)
-    combo_bonus = get_card_combo_bonus(card_count, attacker_skill,
-                                       card_attack, same_class_bonus, class_adv_dis_bonus)
+    same_class_multiplier = get_class_bonus(attacker_class, card_class)
+    class_adv_dis_multiplier = get_class_advantage_disadvantage_bonus(card_class, target_class)
+    card_attack_applied_multiplier = card_attack * same_class_multiplier * class_adv_dis_multiplier
+    combo_bonus = get_card_combo_bonus(card_count, attacker_skill, card_attack_applied_multiplier)
 
     attack_up_multiplier = get_attack_up_bonus_multiplier(card_name, target_class, attack_up_current_multiplier)
-    attack_up_bonus = (card_attack + same_class_bonus + class_adv_dis_bonus + combo_bonus) * attack_up_current_multiplier
 
-    total = math.floor(card_attack + same_class_bonus + class_adv_dis_bonus + combo_bonus + attack_up_bonus)
+    crit_multiplier = 1 # get_crit_multiplier(card_name, card_count)
+
+    total = math.floor((card_attack_applied_multiplier * crit_multiplier + combo_bonus) * attack_up_current_multiplier)
 
     print('---------')
     print('card_name', card_name)
     print('card_attack', card_attack)
-    print('same_class_bonus', same_class_bonus)
-    print('class_adv_dis_bonus', class_adv_dis_bonus)
     print('combo_bonus', combo_bonus)
-    print('attack_up_current_multiplier', attack_up_current_multiplier)
     print('attack_up_multiplier', attack_up_multiplier)
-    print('attack_up_bonus', attack_up_bonus)
+    print('attack_up_current_multiplier', attack_up_current_multiplier)
+    print('crit_multiplier', crit_multiplier)
     print('total', total)
-
-    if attack_up_bonus > 0:
-        attack_up_multiplier = 0
 
     return total, attack_up_multiplier

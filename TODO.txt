@@ -2,3 +2,6 @@
 - Complete attack up bonus: X
 - Remove single placed card:
 - Way to add attack up on 1st card:
+- Add site icon
+- Move confidential data to env
+- Add Ronin card effect computation
